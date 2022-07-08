@@ -1,0 +1,9 @@
+[tool.pyright]
+pythonVersion = "3.10"
+typeCheckingMode = "strict"
+reportPrivateUsage = false
+
+[tool.mypy]
+strict = true
+python_version = "3.10"
+namespace_packages = true

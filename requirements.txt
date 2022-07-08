@@ -1,0 +1,5 @@
+crescent-ext-docstrings==0.1.0
+hikari==2.0.0.dev109
+hikari-crescent==0.2.3
+tomli==2.0.1
+uvloop==0.16.0; sys_platform != "win32"
