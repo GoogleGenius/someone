@@ -7,3 +7,6 @@ reportPrivateUsage = false
 strict = true
 python_version = "3.10"
 namespace_packages = true
+
+[tool.black]
+line_length = 119

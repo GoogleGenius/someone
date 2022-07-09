@@ -8,9 +8,7 @@ import hikari
 import crescent
 
 
-async def on_guild_message_create(
-    event: hikari.GuildMessageCreateEvent, bot: crescent.Bot
-) -> None:
+async def on_guild_message_create(event: hikari.GuildMessageCreateEvent, bot: crescent.Bot) -> None:
     own_user = bot.get_me() or await bot.rest.fetch_my_user()
 
     if not event.content or not event.member or own_user.mention not in event.content:

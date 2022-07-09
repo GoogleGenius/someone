@@ -25,9 +25,7 @@ async def someone(ctx: crescent.Context, message: str) -> None:
     await ctx.defer(ephemeral=True)
 
     if ctx.guild_id is None:
-        await ctx.respond(
-            hikari.Embed(description="This command is only available within guilds!")
-        )
+        await ctx.respond(hikari.Embed(description="This command is only available within guilds!"))
         return
 
     assert ctx.member is not None
@@ -55,4 +53,4 @@ async def someone(ctx: crescent.Context, message: str) -> None:
         await webhook.execute(message.replace(own_user_mention, member.mention))
     await webhook.delete()
 
-    await ctx.respond("✅ Success!")
+    await ctx.respond("( ✓ ) This interaction succeeded")

@@ -4,6 +4,4 @@ __all__: tuple[str, ...] = ("PLUGINS",)
 
 from pkgutil import iter_modules
 
-PLUGINS: list[str] = [
-    module.name for module in iter_modules(__path__, __package__ + ".")
-]
+PLUGINS: list[str] = [module.name for module in iter_modules(__path__, __package__ + ".")]
