@@ -13,7 +13,8 @@ from someone import listeners
 
 
 def build() -> crescent.Bot:
-    bot = crescent.Bot(config.TOKEN, banner=None)
+    intents = hikari.Intents.ALL_UNPRIVILEGED | hikari.Intents.GUILD_MEMBERS
+    bot = crescent.Bot(config.TOKEN, banner=None, intents=intents)
 
     on_guild_message_create_partial = partial(
         listeners.mentions.on_guild_message_create, bot=bot

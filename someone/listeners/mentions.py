@@ -3,7 +3,6 @@ from __future__ import annotations
 __all__: tuple[str, ...] = ("on_guild_message_create",)
 
 import random
-from contextlib import suppress
 
 import hikari
 import crescent
@@ -19,16 +18,13 @@ async def on_guild_message_create(
 
     await bot.rest.trigger_typing(event.channel_id)
 
-    iterator = bot.rest.fetch_members(event.guild_id).filter(lambda m: not m.is_bot)
-    members: list[hikari.Member] = []
+    members = list(bot.cache.get_members_view_for_guild(event.guild_id).values())
 
-    async for m in iterator:
-        members.append(m)
+    for m in members:
+        if m == event.member or m.is_bot:
+            members.remove(m)
 
     member = random.choice(members)
-
-    while member == event.member:
-        member = random.choice(members)
 
     webhook = await bot.rest.create_webhook(
         event.channel_id,
@@ -36,8 +32,7 @@ async def on_guild_message_create(
         avatar=event.member.avatar_url or event.member.default_avatar_url,
     )
 
-    with suppress(hikari.NotFoundError):
-        await webhook.execute(event.content.replace(own_user.mention, member.mention))
-        await webhook.delete()
+    await webhook.execute(event.content.replace(own_user.mention, member.mention))
+    await webhook.delete()
 
-        await event.message.delete()
+    await event.message.delete()

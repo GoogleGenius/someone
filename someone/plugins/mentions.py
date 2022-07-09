@@ -3,7 +3,6 @@ from __future__ import annotations
 __all__: tuple[str, ...] = ()
 
 import random
-from contextlib import suppress
 
 import crescent
 import hikari
@@ -15,7 +14,7 @@ plugin = crescent.Plugin()
 @plugin.include
 @docstrings.parse_doc
 @crescent.command
-async def bing_bong(ctx: crescent.Context, message: str) -> None:
+async def someone(ctx: crescent.Context, message: str) -> None:
     """Mention a random user along with a specified message
 
     Parameters
@@ -26,21 +25,20 @@ async def bing_bong(ctx: crescent.Context, message: str) -> None:
     await ctx.defer(ephemeral=True)
 
     if ctx.guild_id is None:
-        await ctx.respond("This command can only be used within a guild!")
+        await ctx.respond(
+            hikari.Embed(description="This command is only available within guilds!")
+        )
         return
 
     assert ctx.member is not None
 
-    iterator = ctx.app.rest.fetch_members(ctx.guild_id).filter(lambda m: not m.is_bot)
-    members: list[hikari.Member] = []
+    members = list(ctx.app.cache.get_members_view_for_guild(ctx.guild_id).values())
 
-    async for m in iterator:
-        members.append(m)
+    for m in members:
+        if m == ctx.member or m.is_bot:
+            members.remove(m)
 
     member = random.choice(members)
-
-    while member == ctx.member:
-        member = random.choice(members)
 
     webhook = await ctx.app.rest.create_webhook(
         ctx.channel_id,
@@ -49,12 +47,12 @@ async def bing_bong(ctx: crescent.Context, message: str) -> None:
     )
 
     own_user = ctx.app.get_me() or await ctx.app.rest.fetch_my_user()
+    own_user_mention = f"<@!{own_user.id}>"
 
-    with suppress(hikari.NotFoundError):
-        if own_user.mention not in message:
-            await webhook.execute(f"{member.mention}\n{message}")
-        else:
-            await webhook.execute(message.replace(own_user.mention, member.mention))
-        await webhook.delete()
+    if own_user_mention not in message:
+        await webhook.execute(f"{own_user_mention} {message}")
+    else:
+        await webhook.execute(message.replace(own_user_mention, member.mention))
+    await webhook.delete()
 
     await ctx.respond("✅ Success!")
